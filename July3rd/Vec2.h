@@ -21,11 +21,11 @@ public:
 	{
 		return { (T2)x,(T2)y };
 	}
-	T		LenSq() const
+	T LenSq() const
 	{
 		return sq(*this);
 	}
-	T		Len() const
+	T Len() const
 	{
 		return sqrt(LenSq());
 	}
