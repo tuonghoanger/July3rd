@@ -1,13 +1,18 @@
 #include "MainWindow.h"
 #include "Game.h"
 #include "Mat2.h"
+#include "CubeSkinnedScene.h"
 
 Game::Game(MainWindow& wnd)
 	:
 	wnd(wnd),
-	gfx(wnd),
-	cube(1.0f)
+	gfx(wnd)
 {
+	scenes.push_back(std::make_unique<CubeSkinnedScene>(L"images\\dice_skin.png"));
+	scenes.push_back(std::make_unique<TexCubeScene>());
+	scenes.push_back(std::make_unique<SolidCubeScene>());
+	curScene = scenes.begin();
+
 }
 
 void Game::Go()
@@ -20,25 +25,28 @@ void Game::Go()
 
 void Game::UpdateModel()
 {
-	if (!wnd.kbd.KeyIsPressed(VK_SPACE))
-	{
-
-	}
+	const float dt = 1.0f / 60.0f;
+		// cycle through scenes when tab is pressed
+		while (!wnd.kbd.KeyIsEmpty()) {
+			// update scene
+			const auto e = wnd.kbd.ReadKey();
+			if (e.GetCode() == VK_TAB && e.IsPress())
+			{
+				CycleScenes();
+			}
+		}
+		(*curScene)->Update(wnd.kbd, wnd.mouse, dt);
 }
 
 void Game::ComposeFrame()
 {
-	IndexedLineList lines = cube.GetLines();
-	for (Vec3& v : lines.vertices)
-	{
-		v += {0.0f, 0.0f, 1.0f};
-		pst.Transform(v);
-	}
-	for (auto i = lines.indices.cbegin(),
-		end = lines.indices.cend();
-		i != end; std::advance(i, 2))
-	{
-		gfx.DrawLine(lines.vertices[*i], lines.vertices[*std::next(i)], Colors::White);
-	}
+	(*curScene)->Draw(gfx);
+}
 
+void Game::CycleScenes()
+{
+	if (++curScene == scenes.end())
+	{
+		curScene = scenes.begin();
+	}
 }

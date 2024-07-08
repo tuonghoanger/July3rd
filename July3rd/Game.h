@@ -5,6 +5,11 @@
 #include "ChiliMath.h"
 #include "Cube.h"
 #include "ScreenTransformer.h"
+#include "Mat3.h"
+#include <memory>
+#include "Scene.h"
+#include "SolidCubeScene.h"
+#include "TexCubeScene.h"
 
 class Game
 {
@@ -18,13 +23,14 @@ private:
 	void UpdateModel();
 	/********************************/
 	/*  User Functions              */
+	void CycleScenes();
 	/********************************/
 private:
 	MainWindow& wnd;
 	Graphics gfx;
 	/********************************/
 	/*  User Variables              */
-	ScreenTransformer pst;
-	Cube cube;
+	std::vector<std::unique_ptr<Scene>> scenes;
+	std::vector<std::unique_ptr<Scene>>::iterator curScene;
 	/********************************/
 };

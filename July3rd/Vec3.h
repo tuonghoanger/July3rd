@@ -21,11 +21,11 @@ public:
 	{
 		return{ (T2) this->x,(T2) this->y,(T2)z };
 	}
-	T		LenSq() const
+	T LenSq() const
 	{
 		return sq(*this);
 	}
-	T		Len() const
+	T Len() const
 	{
 		return sqrt(LenSq());
 	}
@@ -72,11 +72,11 @@ public:
 	{
 		return this->x * rhs.x + this->y * rhs.y + z * rhs.z;
 	}
-	_Vec3	operator+(const _Vec3& rhs) const
+	_Vec3 operator+(const _Vec3& rhs) const
 	{
 		return _Vec3(*this) += rhs;
 	}
-	_Vec3	operator-(const _Vec3& rhs) const
+	_Vec3 operator-(const _Vec3& rhs) const
 	{
 		return _Vec3(*this) -= rhs;
 	}
@@ -87,9 +87,16 @@ public:
 		z *= rhs;
 		return *this;
 	}
-	_Vec3	operator*(const T& rhs) const
+	_Vec3 operator*(const T& rhs) const
 	{
 		return _Vec3(*this) *= rhs;
+	}
+	_Vec3 operator%(const _Vec3& rhs) const	// cross product
+	{
+		return _Vec3(
+			this->y * rhs.z - this->z * rhs.y,
+			this->z * rhs.x - this->x * rhs.z,
+			this->x * rhs.y - this->y * rhs.x);
 	}
 	_Vec3& operator/=(const T& rhs)
 	{
@@ -109,6 +116,10 @@ public:
 	bool	operator!=(const _Vec3& rhs) const
 	{
 		return !(*this == rhs);
+	}
+	_Vec3 InterpolateTo(const _Vec3& dest, T alpha) const
+	{
+		return *this + (dest - *this) * alpha;
 	}
 public:
 	T z;

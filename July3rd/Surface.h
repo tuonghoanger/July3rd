@@ -8,7 +8,7 @@
 #include <assert.h>
 #include <memory>
 
-class Surface
+class Surface	// data  
 {
 public:
 	class Exception : public ChiliException
