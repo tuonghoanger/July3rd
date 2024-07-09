@@ -8,8 +8,7 @@
 #include "Mat3.h"
 #include <memory>
 #include "Scene.h"
-#include "SolidCubeScene.h"
-#include "TexCubeScene.h"
+#include "FrameTimer.h"
 
 class Game
 {
@@ -23,6 +22,8 @@ private:
 	void UpdateModel();
 	/********************************/
 	/*  User Functions              */
+
+	void OutputSceneName() const;
 	void CycleScenes();
 	/********************************/
 private:
@@ -30,6 +31,7 @@ private:
 	Graphics gfx;
 	/********************************/
 	/*  User Variables              */
+	FrameTimer ft;
 	std::vector<std::unique_ptr<Scene>> scenes;
 	std::vector<std::unique_ptr<Scene>>::iterator curScene;
 	/********************************/
