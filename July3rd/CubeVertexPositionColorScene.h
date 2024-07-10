@@ -4,23 +4,20 @@
 #include "Cube.h"
 #include "Mat3.h"
 #include "Pipeline.h"
-#include "TextureEffect.h"
+#include "VertexPositionColorEffect.h"
 
-// scene demonstrating skinned cube
-class CubeSkinScene : public Scene
+class CubeVertexPositionColorScene : public Scene
 {
 public:
-	typedef Pipeline<TextureEffect> Pipeline;
+	typedef Pipeline<VertexPositionColorEffect> Pipeline;
 	typedef Pipeline::Vertex Vertex;
 public:
-	CubeSkinScene(Graphics& gfx, const std::wstring& filename)
+	CubeVertexPositionColorScene(Graphics& gfx)
 		:
-		itlist(Cube::GetSkinned<Vertex>()),
+		itlist(Cube::GetPlain<Vertex>()),
 		pipeline(gfx),
-		Scene("Textured Cube skinned using texture: " + std::string(filename.begin(), filename.end()))
-	{
-		pipeline.effect.ps.BindTexture(filename);
-	}
+		Scene("Cube vertex position color scene")
+	{}
 	virtual void Update(Keyboard& kbd, Mouse& mouse, float dt) override
 	{
 		theta_x = wrap_angle(theta_x + dTheta * dt / 2);

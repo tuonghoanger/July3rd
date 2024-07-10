@@ -4,29 +4,31 @@
 #include "Cube.h"
 #include "Mat3.h"
 #include "Pipeline.h"
-#include "TextureEffect.h"
+#include "SolidEffect.h"
 
-// scene demonstrating skinned cube
-class CubeSkinScene : public Scene
+class CubeSolidScene : public Scene
 {
 public:
-	typedef Pipeline<TextureEffect> Pipeline;
+	typedef Pipeline<SolidEffect> Pipeline;
 	typedef Pipeline::Vertex Vertex;
 public:
-	CubeSkinScene(Graphics& gfx, const std::wstring& filename)
+	CubeSolidScene(Graphics& gfx)
 		:
-		itlist(Cube::GetSkinned<Vertex>()),
+		itlist(Cube::GetPlainIndependentFaces<Vertex>()),
 		pipeline(gfx),
-		Scene("Textured Cube skinned using texture: " + std::string(filename.begin(), filename.end()))
+		Scene("Colored cube solid independent faces scene")
 	{
-		pipeline.effect.ps.BindTexture(filename);
+		const Color colors[] = {
+			Colors::Red,Colors::Green,Colors::Blue,Colors::Magenta,Colors::Yellow,Colors::Cyan
+		};
+
+		for (int i = 0; i < itlist.vertices.size(); i++)
+		{
+			itlist.vertices[i].color = colors[i / 4];
+		}
 	}
 	virtual void Update(Keyboard& kbd, Mouse& mouse, float dt) override
 	{
-		theta_x = wrap_angle(theta_x + dTheta * dt / 2);
-		theta_y = wrap_angle(theta_y + dTheta * dt / 2);
-		theta_z = wrap_angle(theta_z + dTheta * dt / 2);
-
 		if (kbd.KeyIsPressed('Q'))
 		{
 			theta_x = wrap_angle(theta_x + dTheta * dt);
@@ -85,3 +87,4 @@ private:
 	float theta_y = 0.0f;
 	float theta_z = 0.0f;
 };
+

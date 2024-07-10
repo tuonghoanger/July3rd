@@ -147,6 +147,12 @@
     <ClInclude Include="Colors.h" />
     <ClInclude Include="Cube.h" />
     <ClInclude Include="CubeSkinScene.h" />
+    <ClInclude Include="CubeSolidGeometryScene.h" />
+    <ClInclude Include="CubeSolidScene.h" />
+    <ClInclude Include="CubeVertexColorScene.h" />
+    <ClInclude Include="CubeVertexPositionColorScene.h" />
+    <ClInclude Include="DefaultGeometryShader.h" />
+    <ClInclude Include="DefaultVertexShader.h" />
     <ClInclude Include="DXErr.h" />
     <ClInclude Include="FrameTimer.h" />
     <ClInclude Include="Game.h" />
@@ -159,14 +165,23 @@
     <ClInclude Include="Mat3.h" />
     <ClInclude Include="Mouse.h" />
     <ClInclude Include="Pipeline.h" />
+    <ClInclude Include="Plane.h" />
     <ClInclude Include="Rect.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="ScreenTransformer.h" />
+    <ClInclude Include="SolidEffect.h" />
+    <ClInclude Include="SolidGeometryEffect.h" />
     <ClInclude Include="Surface.h" />
+    <ClInclude Include="TextureEffect.h" />
     <ClInclude Include="Triangle.h" />
     <ClInclude Include="Vec2.h" />
     <ClInclude Include="Vec3.h" />
+    <ClInclude Include="VertexColorEffect.h" />
+    <ClInclude Include="VertexPositionColorEffect.h" />
+    <ClInclude Include="VertexWaveScene.h" />
+    <ClInclude Include="WaveVertexTextureEffect.h" />
+    <ClInclude Include="ZBuffer.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="July3rd1.rc" />

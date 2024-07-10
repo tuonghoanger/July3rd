@@ -2,6 +2,11 @@
 #include "Game.h"
 #include "Mat2.h"
 #include "CubeSkinScene.h"
+#include "CubeVertexColorScene.h"
+#include "CubeSolidScene.h"
+#include "VertexWaveScene.h"
+#include "CubeVertexPositionColorScene.h"
+#include "CubeSolidGeometryScene.h"
 #include <sstream>
 
 Game::Game(MainWindow& wnd)
@@ -9,7 +14,12 @@ Game::Game(MainWindow& wnd)
 	wnd(wnd),
 	gfx(wnd)
 {
+	scenes.push_back(std::make_unique<CubeSolidGeometryScene>(gfx));
+	scenes.push_back(std::make_unique<VertexWaveScene>(gfx));
+	scenes.push_back(std::make_unique<CubeVertexPositionColorScene>(gfx));
 	scenes.push_back(std::make_unique<CubeSkinScene>(gfx, L"images\\dice_skin.png"));
+	scenes.push_back(std::make_unique<CubeVertexColorScene>(gfx));
+	//scenes.push_back(std::make_unique<CubeSolidScene>(gfx));
 	curScene = scenes.begin();
 	OutputSceneName();
 

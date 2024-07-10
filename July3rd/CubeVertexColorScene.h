@@ -4,29 +4,31 @@
 #include "Cube.h"
 #include "Mat3.h"
 #include "Pipeline.h"
-#include "TextureEffect.h"
+#include "VertexColorEffect.h"
 
-// scene demonstrating skinned cube
-class CubeSkinScene : public Scene
+class CubeVertexColorScene : public Scene
 {
 public:
-	typedef Pipeline<TextureEffect> Pipeline;
+	typedef Pipeline<VertexColorEffect> Pipeline;
 	typedef Pipeline::Vertex Vertex;
 public:
-	CubeSkinScene(Graphics& gfx, const std::wstring& filename)
+	CubeVertexColorScene(Graphics& gfx)
 		:
-		itlist(Cube::GetSkinned<Vertex>()),
+		itlist(Cube::GetPlain<Vertex>()),
 		pipeline(gfx),
-		Scene("Textured Cube skinned using texture: " + std::string(filename.begin(), filename.end()))
+		Scene("Colored cube vertex gradient scene")
 	{
-		pipeline.effect.ps.BindTexture(filename);
+		itlist.vertices[0].color = Vec3(Colors::Red);
+		itlist.vertices[1].color = Vec3(Colors::Green);
+		itlist.vertices[2].color = Vec3(Colors::Blue);
+		itlist.vertices[3].color = Vec3(Colors::Yellow);
+		itlist.vertices[4].color = Vec3(Colors::Cyan);
+		itlist.vertices[5].color = Vec3(Colors::Magenta);
+		itlist.vertices[6].color = Vec3(Colors::White);
+		itlist.vertices[7].color = Vec3(Colors::Black);
 	}
 	virtual void Update(Keyboard& kbd, Mouse& mouse, float dt) override
 	{
-		theta_x = wrap_angle(theta_x + dTheta * dt / 2);
-		theta_y = wrap_angle(theta_y + dTheta * dt / 2);
-		theta_z = wrap_angle(theta_z + dTheta * dt / 2);
-
 		if (kbd.KeyIsPressed('Q'))
 		{
 			theta_x = wrap_angle(theta_x + dTheta * dt);

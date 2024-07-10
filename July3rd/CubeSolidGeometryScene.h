@@ -1,32 +1,28 @@
 #pragma once
-
 #include "Scene.h"
 #include "Cube.h"
 #include "Mat3.h"
 #include "Pipeline.h"
-#include "TextureEffect.h"
+#include "SolidGeometryEffect.h"
 
-// scene demonstrating skinned cube
-class CubeSkinScene : public Scene
+class CubeSolidGeometryScene : public Scene
 {
 public:
-	typedef Pipeline<TextureEffect> Pipeline;
+	typedef Pipeline<SolidGeometryEffect> Pipeline;
 	typedef Pipeline::Vertex Vertex;
 public:
-	CubeSkinScene(Graphics& gfx, const std::wstring& filename)
+	CubeSolidGeometryScene(Graphics& gfx)
 		:
-		itlist(Cube::GetSkinned<Vertex>()),
+		itlist(Cube::GetPlain<Vertex>()),
 		pipeline(gfx),
-		Scene("Textured Cube skinned using texture: " + std::string(filename.begin(), filename.end()))
+		Scene("Colored cube geometry solid face scene")
 	{
-		pipeline.effect.ps.BindTexture(filename);
+		pipeline.effect.gs.BindColors(
+			{ Colors::Red,Colors::Green,Colors::Blue,Colors::Magenta,Colors::Yellow,Colors::Cyan }
+		);
 	}
 	virtual void Update(Keyboard& kbd, Mouse& mouse, float dt) override
 	{
-		theta_x = wrap_angle(theta_x + dTheta * dt / 2);
-		theta_y = wrap_angle(theta_y + dTheta * dt / 2);
-		theta_z = wrap_angle(theta_z + dTheta * dt / 2);
-
 		if (kbd.KeyIsPressed('Q'))
 		{
 			theta_x = wrap_angle(theta_x + dTheta * dt);

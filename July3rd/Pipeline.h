@@ -6,112 +6,45 @@
 #include "IndexedTriangleList.h"
 #include "ScreenTransformer.h"
 #include "Mat3.h"
+#include "ZBuffer.h"
 #include <algorithm>
 
-// fixed-function triangle drawing pipeline
-// draws textured triangle lists with clamping
+// triangle drawing pipeline with programable
+// pixel shading stage
+template<class Effect>
 class Pipeline
 {
 public:
-	// vertex type used for geometry and throughout pipeline
-	class Vertex
-	{
-	public:
-		Vertex() = default;
-		Vertex(const Vec3& pos)
-			:
-			pos(pos)
-		{}
-		// this enables template functions clone a vertex
-		// while changing the pos only
-		Vertex(const Vec3& pos, const Vertex& src)
-			:
-			t(src.t),
-			pos(pos)
-		{}
-		Vertex(const Vec3& pos, const Vec2& t)
-			:
-			t(t),
-			pos(pos)
-		{}
-		Vertex& operator+=(const Vertex& rhs)
-		{
-			pos += rhs.pos;
-			t += rhs.t;
-			return *this;
-		}
-		Vertex operator+(const Vertex& rhs) const
-		{
-			return Vertex(*this) += rhs;
-		}
-		Vertex& operator-=(const Vertex& rhs)
-		{
-			pos -= rhs.pos;
-			t -= rhs.t;
-			return *this;
-		}
-		Vertex operator-(const Vertex& rhs) const
-		{
-			return Vertex(*this) -= rhs;
-		}
-		Vertex& operator*=(float rhs)
-		{
-			pos *= rhs;
-			t *= rhs;
-			return *this;
-		}
-		Vertex operator*(float rhs) const
-		{
-			return Vertex(*this) *= rhs;
-		}
-		Vertex& operator/=(float rhs)
-		{
-			pos /= rhs;
-			t /= rhs;
-			return *this;
-		}
-		Vertex operator/(float rhs) const
-		{
-			return Vertex(*this) /= rhs;
-		}
-	public:
-		Vec3 pos;
-		Vec2 t;
-	};
+	typedef typename Effect::Vertex Vertex;
+	typedef typename Effect::VertexShader::Output VSOut;
+	typedef typename Effect::GeometryShader::Output GSOut;
 public:
 	Pipeline(Graphics& gfx)
 		:
-		gfx(gfx)
+		gfx(gfx),
+		zb(gfx.ScreenWidth, gfx.ScreenHeight)
 	{}
 	void Draw(IndexedTriangleList<Vertex>& triList)
 	{
 		ProcessVertices(triList.vertices, triList.indices);
 	}
-	void BindRotation(const Mat3& rotation_in)
+	// needed to reset the z-buffer after each frame
+	void BeginFrame()
 	{
-		rotation = rotation_in;
-	}
-	void BindTranslation(const Vec3& translation_in)
-	{
-		translation = translation_in;
-	}
-	void BindTexture(const std::wstring& filename)
-	{
-		pTex = std::make_unique<Surface>(Surface::FromFile(filename));
+		zb.Clear();
 	}
 private:
 	// vertex processing function
-	// transforms vertices and then passes vtx & idx lists to triangle assembler
+	// transforms vertices using vs and then passes vtx & idx lists to triangle assembler
 	void ProcessVertices(const std::vector<Vertex>& vertices, const std::vector<size_t>& indices)
 	{
 		// create vertex vector for vs output
-		std::vector<Vertex> verticesOut;
+		std::vector<VSOut> verticesOut(vertices.size());
 
-		// transform to world pos vertices using matrix + vector
-		for (const auto& v : vertices)
-		{
-			verticesOut.emplace_back(v.pos * rotation + translation, v.t);
-		}
+		// transform vertices with vs
+		std::transform(vertices.begin(), vertices.end(),
+			verticesOut.begin(),
+			effect.vs);
 
 		// assemble triangles from stream of indices and vertices
 		AssembleTriangles(verticesOut, indices);
@@ -119,7 +52,7 @@ private:
 	// triangle assembly function
 	// assembles indexed vertex stream into triangles and passes them to post process
 	// culls (does not send) back facing triangles
-	void AssembleTriangles(const std::vector<Vertex>& vertices, const std::vector<size_t>& indices)
+	void AssembleTriangles(const std::vector<VSOut>& vertices, const std::vector<size_t>& indices)
 	{
 		// assemble triangles in the stream and process
 		for (size_t i = 0, end = indices.size() / 3; i < end; i++)
@@ -132,28 +65,28 @@ private:
 			if ((v1.pos - v0.pos) % (v2.pos - v0.pos) * v0.pos <= 0.0f)
 			{
 				// process 3 vertices into a triangle
-				ProcessTriangle(v0, v1, v2);
+				ProcessTriangle(v0, v1, v2, i);
 			}
 		}
 	}
 	// triangle processing function
-	// takes 3 vertices to generate triangle
+	//passes 3 vertices to gs to generate triangle
 	// sends generated triangle to post-processing
-	void ProcessTriangle(const Vertex& v0, const Vertex& v1, const Vertex& v2)
+	void ProcessTriangle(const VSOut& v0, const VSOut& v1, const VSOut& v2, size_t triangle_index)
 	{
 		// generate triangle from 3 vertices using gs
 		// and send to post-processing
-		auto tris = Triangle<Vertex>{ v0, v1, v2 };
+		auto tris = effect.gs(v0, v1, v2, triangle_index);
 		PostProcessTriangleVertices(tris);
 	}
 	// vertex post-processing function
 	// perform perspective and viewport transformations
-	void PostProcessTriangleVertices(Triangle<Vertex>& triangle)
+	void PostProcessTriangleVertices(Triangle<GSOut>& triangle)
 	{
 		// perspective divide and screen transform for all 3 vertices
-		pst.Transform(triangle.v0.pos);
-		pst.Transform(triangle.v1.pos);
-		pst.Transform(triangle.v2.pos);
+		pst.Transform(triangle.v0);
+		pst.Transform(triangle.v1);
+		pst.Transform(triangle.v2);
 
 		// draw the triangle
 		DrawTriangle(triangle);
@@ -164,12 +97,12 @@ private:
 	//
 	// entry point for tri rasterization
 	// sorts vertices, determines case, splits to flat tris, dispatches to flat tri funcs
-	void DrawTriangle(const Triangle<Vertex>& triangle)
+	void DrawTriangle(const Triangle<GSOut>& triangle)
 	{
 		// using pointers so we can swap (for sorting purposes)
-		const Vertex* pv0 = &triangle.v0;
-		const Vertex* pv1 = &triangle.v1;
-		const Vertex* pv2 = &triangle.v2;
+		const GSOut* pv0 = &triangle.v0;
+		const GSOut* pv1 = &triangle.v1;
+		const GSOut* pv2 = &triangle.v2;
 
 		// sorting vertices by y
 		if (pv1->pos.y < pv0->pos.y) std::swap(pv0, pv1);
@@ -211,9 +144,9 @@ private:
 		}
 	}
 	// does flat *TOP* tri-specific calculations and calls DrawFlatTriangle
-	void DrawFlatTopTriangle(const Vertex& it0,
-		const Vertex& it1,
-		const Vertex& it2)
+	void DrawFlatTopTriangle(const GSOut& it0,
+		const GSOut& it1,
+		const GSOut& it2)
 	{
 		// calulcate dVertex / dy
 		// change in interpolant for every 1 change in y
@@ -228,9 +161,9 @@ private:
 		DrawFlatTriangle(it0, it1, it2, dit0, dit1, itEdge1);
 	}
 	// does flat *BOTTOM* tri-specific calculations and calls DrawFlatTriangle
-	void DrawFlatBottomTriangle(const Vertex& it0,
-		const Vertex& it1,
-		const Vertex& it2)
+	void DrawFlatBottomTriangle(const GSOut& it0,
+		const GSOut& it1,
+		const GSOut& it2)
 	{
 		// calulcate dVertex / dy
 		// change in interpolant for every 1 change in y
@@ -245,13 +178,14 @@ private:
 		DrawFlatTriangle(it0, it1, it2, dit0, dit1, itEdge1);
 	}
 	// does processing common to both flat top and flat bottom tris
-	// texture lookup and pixel written here
-	void DrawFlatTriangle(const Vertex& it0,
-		const Vertex& it1,
-		const Vertex& it2,
-		const Vertex& dv0,
-		const Vertex& dv1,
-		Vertex itEdge1)
+	// scan over triangle in screen space, interpolate attributes,
+	// depth cull, invoke ps and write pixel to screen
+	void DrawFlatTriangle(const GSOut& it0,
+		const GSOut& it1,
+		const GSOut& it2,
+		const GSOut& dv0,
+		const GSOut& dv1,
+		GSOut itEdge1)
 	{
 		// create edge interpolant for left edge (always v0)
 		auto itEdge0 = it0;
@@ -263,12 +197,6 @@ private:
 		// do interpolant prestep
 		itEdge0 += dv0 * (float(yStart) + 0.5f - it0.pos.y);
 		itEdge1 += dv1 * (float(yStart) + 0.5f - it0.pos.y);
-
-		// prepare clamping constants
-		const float tex_width = float(pTex->GetWidth());
-		const float tex_height = float(pTex->GetHeight());
-		const float tex_xclamp = tex_width - 1.0f;
-		const float tex_yclamp = tex_height - 1.0f;
 
 		for (int y = yStart; y < yEnd; y++, itEdge0 += dv0, itEdge1 += dv1)
 		{
@@ -290,18 +218,29 @@ private:
 
 			for (int x = xStart; x < xEnd; x++, iLine += diLine)
 			{
-				// perform texture lookup, clamp, and write pixel
-				gfx.PutPixel(x, y, pTex->GetPixel(
-					(unsigned int)std::min(iLine.t.x * tex_width + 0.5f, tex_xclamp),
-					(unsigned int)std::min(iLine.t.y * tex_height + 0.5f, tex_yclamp)
-				));
+				// recover interpolated z from interpolated 1/z
+				const float z = 1.0f / iLine.pos.z;
+				// do z rejection / update of z buffer
+				// skip shading step if z rejected (early z)
+				if (zb.TestAndSet(x, y, z))
+				{
+					// recover interpolated attributes
+					// (wasted effort in multiplying pos (x,y,z) here, but
+					//  not a huge deal, not worth the code complication to fix)
+					const auto attr = iLine * z;
+					// invoke pixel shader with interpolated vertex attributes
+					// and use result to set the pixel color on the screen
+					gfx.PutPixel(x, y, effect.ps(attr));
+				}
 			}
 		}
 	}
+public:
+	Effect effect;
 private:
 	Graphics& gfx;
 	ScreenTransformer pst;
+	ZBuffer zb;
 	Mat3 rotation;
 	Vec3 translation;
-	std::unique_ptr<Surface> pTex;
 };

@@ -1,32 +1,26 @@
 #pragma once
 
 #include "Scene.h"
-#include "Cube.h"
+#include "Plane.h"
 #include "Mat3.h"
-#include "Pipeline.h"
-#include "TextureEffect.h"
+#include "WaveVertexTextureEffect.h"
 
-// scene demonstrating skinned cube
-class CubeSkinScene : public Scene
+class VertexWaveScene : public Scene
 {
 public:
-	typedef Pipeline<TextureEffect> Pipeline;
+	typedef Pipeline<WaveVertexTextureEffect> Pipeline;
 	typedef Pipeline::Vertex Vertex;
 public:
-	CubeSkinScene(Graphics& gfx, const std::wstring& filename)
+	VertexWaveScene(Graphics& gfx)
 		:
-		itlist(Cube::GetSkinned<Vertex>()),
+		itlist(Plane::GetSkinned<Vertex>(4)),
 		pipeline(gfx),
-		Scene("Textured Cube skinned using texture: " + std::string(filename.begin(), filename.end()))
+		Scene("Test Plane Rippling VS")
 	{
-		pipeline.effect.ps.BindTexture(filename);
+		pipeline.effect.ps.BindTexture(L"images\\sauron-bhole-100x100.png");
 	}
 	virtual void Update(Keyboard& kbd, Mouse& mouse, float dt) override
 	{
-		theta_x = wrap_angle(theta_x + dTheta * dt / 2);
-		theta_y = wrap_angle(theta_y + dTheta * dt / 2);
-		theta_z = wrap_angle(theta_z + dTheta * dt / 2);
-
 		if (kbd.KeyIsPressed('Q'))
 		{
 			theta_x = wrap_angle(theta_x + dTheta * dt);
@@ -59,6 +53,7 @@ public:
 		{
 			offset_z -= 2.0f * dt;
 		}
+		time += dt;
 	}
 	virtual void Draw() override
 	{
@@ -73,6 +68,7 @@ public:
 		// set pipeline transform
 		pipeline.effect.vs.BindRotation(rot);
 		pipeline.effect.vs.BindTranslation(trans);
+		pipeline.effect.vs.SetTime(time);
 		// render triangles
 		pipeline.Draw(itlist);
 	}
@@ -84,4 +80,5 @@ private:
 	float theta_x = 0.0f;
 	float theta_y = 0.0f;
 	float theta_z = 0.0f;
+	float time = 0.0f;
 };
