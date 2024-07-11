@@ -1,26 +1,29 @@
 #pragma once
 
 #include "Scene.h"
-#include "Plane.h"
+#include "Cube.h"
 #include "Mat3.h"
-#include "WaveVertexTextureEffect.h"
+#include "Pipeline.h"
+#include "VertexFlatEffect.h"
 
-class VertexWaveScene : public Scene
+class CubeFlatIndependentScene : public Scene
 {
 public:
-	typedef Pipeline<WaveVertexTextureEffect> Pipeline;
+	typedef Pipeline<VertexFlatEffect> Pipeline;
 	typedef Pipeline::Vertex Vertex;
 public:
-	VertexWaveScene(Graphics& gfx)
+	CubeFlatIndependentScene(Graphics& gfx)
 		:
-		itlist(Plane::GetSkinned<Vertex>(50)),
+		itlist(Cube::GetIndependentFacesNormals<Vertex>()),
 		pipeline(gfx),
-		Scene("Test Plane Rippling VS")
-	{
-		pipeline.effect.ps.BindTexture(L"images\\sauron-bhole-100x100.png");
-	}
+		Scene("Cube flat vertex scene")
+	{}
 	virtual void Update(Keyboard& kbd, Mouse& mouse, float dt) override
 	{
+		theta_x = wrap_angle(theta_x + dTheta * dt / 2);
+		theta_y = wrap_angle(theta_y + dTheta * dt / 2);
+		theta_z = wrap_angle(theta_z + dTheta * dt / 2);
+
 		if (kbd.KeyIsPressed('Q'))
 		{
 			theta_x = wrap_angle(theta_x + dTheta * dt);
@@ -44,14 +47,6 @@ public:
 		if (kbd.KeyIsPressed('D'))
 		{
 			theta_z = wrap_angle(theta_z - dTheta * dt);
-		}
-		if (kbd.KeyIsPressed('R'))
-		{
-			offset_z += 2.0f * dt;
-		}
-		if (kbd.KeyIsPressed('F'))
-		{
-			offset_z -= 2.0f * dt;
 		}
 		if (kbd.KeyIsPressed('U'))
 		{
@@ -77,7 +72,14 @@ public:
 		{
 			phi_z = wrap_angle(phi_z - dTheta * dt);
 		}
-		time += dt;
+		if (kbd.KeyIsPressed('R'))
+		{
+			offset_z += 0.2f * dt;
+		}
+		if (kbd.KeyIsPressed('F'))
+		{
+			offset_z -= 0.2f * dt;
+		}
 	}
 	virtual void Draw() override
 	{
@@ -96,8 +98,7 @@ public:
 		// set pipeline transform
 		pipeline.effect.vs.BindRotation(rot);
 		pipeline.effect.vs.BindTranslation(trans);
-		pipeline.effect.vs.SetTime(time);
-		pipeline.effect.gs.SetLightDirection(light_dir * rot_phi);
+		pipeline.effect.vs.SetLightDirection(light_dir * rot_phi);
 		// render triangles
 		pipeline.Draw(itlist);
 	}
@@ -109,7 +110,6 @@ private:
 	float theta_x = 0.0f;
 	float theta_y = 0.0f;
 	float theta_z = 0.0f;
-	float time = 0.0f;
 	float phi_x = 0.0f;
 	float phi_y = 0.0f;
 	float phi_z = 0.0f;
