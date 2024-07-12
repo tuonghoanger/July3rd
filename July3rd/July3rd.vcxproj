@@ -173,6 +173,8 @@
     <ClInclude Include="Mat3.h" />
     <ClInclude Include="Miniball.h" />
     <ClInclude Include="Mouse.h" />
+    <ClInclude Include="PhongPointEffect.h" />
+    <ClInclude Include="PhongPointScene.h" />
     <ClInclude Include="Pipeline.h" />
     <ClInclude Include="Plane.h" />
     <ClInclude Include="Rect.h" />
@@ -181,6 +183,8 @@
     <ClInclude Include="ScreenTransformer.h" />
     <ClInclude Include="SolidEffect.h" />
     <ClInclude Include="SolidGeometryEffect.h" />
+    <ClInclude Include="SpecularPhongPointEffect.h" />
+    <ClInclude Include="SpecularPhongPointScene.h" />
     <ClInclude Include="Sphere.h" />
     <ClInclude Include="Surface.h" />
     <ClInclude Include="TextureEffect.h" />

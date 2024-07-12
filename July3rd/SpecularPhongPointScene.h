@@ -4,24 +4,24 @@
 #include "Cube.h"
 #include "Mat3.h"
 #include "Pipeline.h"
-#include "GouraudPointEffect.h"
+#include "SpecularPhongPointEffect.h"
 #include "SolidEffect.h"
-#include <memory>
+#include "Sphere.h"
 
-class GouraudPointScene : public Scene
+class SpecularPhongPointScene : public Scene
 {
 public:
-	typedef ::Pipeline<GouraudPointEffect> Pipeline;
+	typedef ::Pipeline<SpecularPhongPointEffect> Pipeline;
 	typedef ::Pipeline<SolidEffect> LightIndicatorPipeline;
 	typedef Pipeline::Vertex Vertex;
 public:
-	GouraudPointScene(Graphics& gfx, IndexedTriangleList<Vertex> tl)
+	SpecularPhongPointScene(Graphics& gfx, IndexedTriangleList<Vertex> tl)
 		:
 		itlist(std::move(tl)),
 		pZb(std::make_shared<ZBuffer>(gfx.ScreenWidth, gfx.ScreenHeight)),
 		pipeline(gfx, pZb),
 		liPipeline(gfx, pZb),
-		Scene("gouraud point  scene free mesh")
+		Scene("phong point shader scene free mesh")
 	{
 		itlist.AdjustToTrueCenter();
 		offset_z = itlist.GetRadius() * 1.6f;
@@ -102,11 +102,13 @@ public:
 		// set pipeline transform
 		pipeline.effect.vs.BindRotation(rot);
 		pipeline.effect.vs.BindTranslation(trans);
-		pipeline.effect.vs.SetLightPosition({ lpos_x,lpos_y,lpos_z });
+		pipeline.effect.ps.SetLightPosition({ lpos_x,lpos_y,lpos_z });
 		// render triangles
 		pipeline.Draw(itlist);
 
-		//liPipeline.BeginFrame();
+		// draw light indicator with different pipeline
+		// don't call beginframe on this pipeline b/c wanna keep zbuffer contents
+		// (don't like this assymetry but we'll live with it for now)
 		liPipeline.effect.vs.BindTranslation({ lpos_x,lpos_y,lpos_z });
 		liPipeline.effect.vs.BindRotation(Mat3::Identity());
 		liPipeline.Draw(lightIndicator);
