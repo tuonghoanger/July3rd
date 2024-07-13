@@ -6,7 +6,7 @@ template <typename T>
 class _Vec3 : public _Vec2<T>
 {
 public:
-	_Vec3() {}
+	_Vec3() = default;
 	_Vec3(T x, T y, T z)
 		:
 		_Vec2<T>(x, y),
@@ -111,7 +111,7 @@ public:
 	}
 	bool	operator==(const _Vec3& rhs) const
 	{
-		return this->x == rhs.x && this->y == rhs.y && rhs.z = z;
+		return this->x == rhs.x && this->y == rhs.y && rhs.z == z;
 	}
 	bool	operator!=(const _Vec3& rhs) const
 	{

@@ -5,7 +5,7 @@
 #include "ChiliMath.h"
 #include "Cube.h"
 #include "ScreenTransformer.h"
-#include "Mat3.h"
+#include "Mat.h"
 #include <memory>
 #include "Scene.h"
 #include "FrameTimer.h"
