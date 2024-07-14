@@ -92,16 +92,10 @@
     <ClInclude Include="DXErr.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Mat2.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Vec3.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Mat3.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ScreenTransformer.h">
@@ -225,6 +219,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="TestTriangle.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MouseTracker.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
