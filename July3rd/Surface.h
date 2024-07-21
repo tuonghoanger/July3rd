@@ -30,29 +30,30 @@ public:
 		height(height),
 		pitch(pitch)
 	{}
-	Surface(Surface&& source)
-		:
-		pBuffer(std::move(source.pBuffer)),
-		width(source.width),
-		height(source.height),
-		pitch(source.pitch)
-	{}
+	//Surface(Surface&& source)
+	//	:
+	//	pBuffer(std::move(source.pBuffer)),
+	//	width(source.width),
+	//	height(source.height),
+	//	pitch(source.pitch)
+	//{}
 	Surface(Surface&) = delete;
-	Surface& operator=(Surface&& donor)
-	{
-		width = donor.width;
-		height = donor.height;
-		pitch = donor.pitch;
-		pBuffer = std::move(donor.pBuffer);
-		donor.pBuffer = nullptr;
-		return *this;
-	}
+	//Surface& operator=(Surface&& donor)
+	//{
+	//	width = donor.width;
+	//	height = donor.height;
+	//	pitch = donor.pitch;
+	//	pBuffer = std::move(donor.pBuffer);
+	//	donor.pBuffer = nullptr;
+	//	return *this;
+	//}
 	Surface& operator=(const Surface&) = delete;
 	~Surface()
 	{}
 	void Clear(Color fillValue)
 	{
-		memset(pBuffer.get(), fillValue.dword, pitch * height * sizeof(Color));
+	//	memset(pBuffer.get(), fillValue.dword, pitch * height * sizeof(Color));
+		std::fill(pBuffer.get(), pBuffer.get() + (pitch * height), fillValue);
 	}
 	void Present(unsigned int dstPitch, BYTE* const pDst) const
 	{

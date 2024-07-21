@@ -22,7 +22,6 @@ private:
 	void UpdateModel();
 	/********************************/
 	/*  User Functions              */
-
 	void OutputSceneName() const;
 	void CycleScenes();
 	/********************************/

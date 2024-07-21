@@ -5,9 +5,8 @@
 #include "Game.h"
 #include <assert.h>
 
-MainWindow::MainWindow(HINSTANCE hInst, wchar_t* pArgs)
+MainWindow::MainWindow(HINSTANCE hInst)
 	:
-	args(pArgs),
 	hInst(hInst)
 {
 	// register window class
@@ -30,7 +29,7 @@ MainWindow::MainWindow(HINSTANCE hInst, wchar_t* pArgs)
 		WS_CAPTION | WS_MINIMIZEBOX | WS_SYSMENU,
 		wr.left, wr.top, wr.right - wr.left, wr.bottom - wr.top,
 		nullptr, nullptr, hInst, this);
-
+	
 	// throw exception if something went terribly wrong
 	if (hWnd == nullptr)
 	{

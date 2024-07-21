@@ -205,6 +205,7 @@ Graphics::~Graphics()
 
 void Graphics::BeginFrame()
 {
+	 //White = Black = Gray LightGray Red Green = Blue = Yellow = Cyan =  Magenta 
 	sysBuffer.Clear(Colors::Black);
 }
 

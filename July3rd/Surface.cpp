@@ -3,11 +3,7 @@
 #include "ChiliWin.h"
 #include "Surface.h"
 #include "ChiliException.h"
-namespace Gdiplus
-{
-	using std::min;
-	using std::max;
-}
+
 #include <gdiplus.h>
 #include <sstream>
 

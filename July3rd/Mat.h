@@ -214,10 +214,10 @@ public:
 		if constexpr (S == 4)
 		{
 			return {
-				(T)2.0 * n / w,	(T)0.0,			(T)0.0,				(T)0.0,
-				(T)0.0,			(T)2.0 * n / h,	(T)0.0,				(T)0.0,
-				(T)0.0,			(T)0.0,			f / (f - n),		(T)1.0,
-				(T)0.0,			(T)0.0,			-n * f / (f - n),	(T)0.0,
+				(T)2.0 * n / w , (T)0.0         ,	(T)0.0		   ,	(T)0.0 ,
+				(T)0.0         , (T)2.0 * n / h ,	(T)0.0         ,	(T)0.0 ,
+				(T)0.0		   , (T)0.0         ,  f / (f - n)     ,	(T)1.0 ,
+				(T)0.0		   , (T)0.0         , -n * f / (f - n) ,	(T)0.0 ,
 			};
 		}
 		else
@@ -225,18 +225,18 @@ public:
 			static_assert(S == 3 || S == 4, "Bad dimensionality");
 		}
 	}
-	constexpr static _Mat ProjectionHFOV(T fov, T ar, T n, T f)
+	constexpr static _Mat ProjectionHFOV(T fov, T ar, T n, T f) //	
 	{
 		if constexpr (S == 4)
 		{
 			const auto fov_rad = fov * (T)PI / (T)180.0;
-			const auto w = (T)1.0f / std::tan(fov_rad / (T)2.0);
-			const auto h = w * ar;
+			const auto h = (T)1.0f / std::tan(fov_rad / (T)2.0);
+			const auto w = h * (T)1.0f / ar;
 			return {
-				w,		(T)0.0,	(T)0.0,				(T)0.0,
-				(T)0.0,	h,		(T)0.0,				(T)0.0,
-				(T)0.0,	(T)0.0,	f / (f - n),		(T)1.0,
-				(T)0.0,	(T)0.0,	-n * f / (f - n),	(T)0.0,
+				w              , (T)0.0         ,	(T)0.0		   ,	(T)0.0 ,
+				(T)0.0         ,  h             ,	(T)0.0         ,	(T)0.0 ,
+				(T)0.0		   , (T)0.0         ,  f / (f - n)     ,	(T)1.0 ,
+				(T)0.0		   , (T)0.0         , -n * f / (f - n) ,	(T)0.0 ,
 			};
 		}
 		else

@@ -5,7 +5,7 @@
 class Color
 {
 public:
-	unsigned int dword;
+	unsigned int dword; // 32 bit
 public:
 	constexpr Color() : dword() {}
 	constexpr Color(const Color& col)
@@ -28,6 +28,8 @@ public:
 		:
 		Color((x << 24u) | col.dword)
 	{}
+
+
 	explicit Color(const Vec3& cf)
 		:
 		Color(unsigned char(cf.x), unsigned char(cf.y), unsigned char(cf.z))
@@ -41,6 +43,8 @@ public:
 		dword = color.dword;
 		return *this;
 	}
+
+	// Encapsulation
 	constexpr unsigned char GetX() const
 	{
 		return dword >> 24u;

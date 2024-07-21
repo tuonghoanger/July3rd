@@ -9,11 +9,9 @@ Game::Game(MainWindow& wnd)
 	wnd(wnd),
 	gfx(wnd)
 {
-	scenes.push_back(std::make_unique<SpecularPhongPointScene>(gfx, TestTriangle::GetNormals<SpecularPhongPointScene::Vertex>()));
-	scenes.push_back(std::make_unique<SpecularPhongPointScene>(gfx, IndexedTriangleList<SpecularPhongPointScene::Vertex>::LoadNormals("models\\suzanne.obj")));
+	scenes.push_back(std::make_unique<SpecularPhongPointScene>(gfx));
 	curScene = scenes.begin();
 	OutputSceneName();
-
 }
 
 void Game::Go()
@@ -22,6 +20,14 @@ void Game::Go()
 	UpdateModel();
 	ComposeFrame();
 	gfx.EndFrame();
+
+	//const int floatValue = 1.0f / ft.Mark();
+	//std::wostringstream woss;
+	//woss << L"Hoang DirectX Framework  " << floatValue;
+	//std::wstring title = woss.str();
+
+	//// Set the window title
+	//SetWindowText(wnd.hWnd, title.c_str());
 }
 
 void Game::UpdateModel()

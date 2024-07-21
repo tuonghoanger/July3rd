@@ -10,6 +10,7 @@
 class HWNDKey
 {
 	friend Graphics::Graphics(HWNDKey&);
+	friend class Game;
 public:
 	HWNDKey(const HWNDKey&) = delete;
 	HWNDKey& operator=(HWNDKey&) = delete;
@@ -30,7 +31,7 @@ public:
 		virtual std::wstring GetExceptionType() const override { return L"Windows Exception"; }
 	};
 public:
-	MainWindow(HINSTANCE hInst, wchar_t* pArgs);
+	MainWindow(HINSTANCE hInst);
 	MainWindow(const MainWindow&) = delete;
 	MainWindow& operator=(const MainWindow&) = delete;
 	~MainWindow();
@@ -43,10 +44,6 @@ public:
 	}
 	// returns false if quitting
 	bool ProcessMessage();
-	const std::wstring& GetArgs() const
-	{
-		return args;
-	}
 private:
 	static LRESULT WINAPI _HandleMsgSetup(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 	static LRESULT WINAPI _HandleMsgThunk(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
@@ -57,5 +54,4 @@ public:
 private:
 	static constexpr const wchar_t* wndClassName = L"DirectX Framework Window";
 	HINSTANCE hInst = nullptr;
-	std::wstring args;
 };

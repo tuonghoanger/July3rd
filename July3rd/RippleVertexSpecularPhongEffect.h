@@ -7,7 +7,7 @@
 
 // flat shading with vertex normals
 template<class Diffuse, class Specular>
-class SpecularPhongPointEffect
+class RippleVertexSpecularPhongEffect
 {
 public:
 	// the vertex type that will be input into the pipeline
@@ -21,19 +21,20 @@ public:
 		{}
 		Vertex(const Vec3& pos, const Vertex& src)
 			:
-			n(src.n),
+			t(src.t),
 			pos(pos)
 		{}
-		Vertex(const Vec3& pos, const Vec3& n)
+		Vertex(const Vec3& pos, const Vec2& t)
 			:
-			n(n),
+			t(t),
 			pos(pos)
 		{}
 	public:
 		Vec3 pos;
-		Vec3 n;
+		Vec2 t;
 	};
-	// vertex shader output interpolates position, normal, world position
+	// vertex shader
+	// output interpolates position, normal, world position
 	class VSOutput
 	{
 	public:
@@ -46,19 +47,22 @@ public:
 			:
 			n(src.n),
 			worldPos(src.worldPos),
-			pos(pos)
+			pos(pos),
+			t(src.t)
 		{}
-		VSOutput(const Vec4& pos, const Vec3& n, const Vec3& worldPos)
+		VSOutput(const Vec4& pos, const Vec3& n, const Vec3& worldPos, const Vec2& t)
 			:
 			n(n),
 			pos(pos),
-			worldPos(worldPos)
+			worldPos(worldPos),
+			t(t)
 		{}
 		VSOutput& operator+=(const VSOutput& rhs)
 		{
 			pos += rhs.pos;
 			n += rhs.n;
 			worldPos += rhs.worldPos;
+			t += rhs.t;
 			return *this;
 		}
 		VSOutput operator+(const VSOutput& rhs) const
@@ -70,6 +74,7 @@ public:
 			pos -= rhs.pos;
 			n -= rhs.n;
 			worldPos -= rhs.worldPos;
+			t -= rhs.t;
 			return *this;
 		}
 		VSOutput operator-(const VSOutput& rhs) const
@@ -81,6 +86,7 @@ public:
 			pos *= rhs;
 			n *= rhs;
 			worldPos *= rhs;
+			t *= rhs;
 			return *this;
 		}
 		VSOutput operator*(float rhs) const
@@ -92,6 +98,7 @@ public:
 			pos /= rhs;
 			n /= rhs;
 			worldPos /= rhs;
+			t /= rhs;
 			return *this;
 		}
 		VSOutput operator/(float rhs) const
@@ -99,18 +106,43 @@ public:
 			return VSOutput(*this) /= rhs;
 		}
 	public:
-		Vec4 pos;	// be4 perspective division
+		Vec4 pos;
 		Vec3 n;
 		Vec3 worldPos;
+		Vec2 t;
 	};
 	class VertexShader : public BaseVertexShader<VSOutput>
 	{
 	public:
-		VSOutput operator()(const Vertex& v) const
+		void SetTime(float time)
 		{
-			const auto p4 = Vec4(v.pos);
-			return { p4 * this->worldViewProj,Vec4{ v.n,0.0f } *this->worldView,p4 * this->worldView };
+			t = time;
 		}
+		typename BaseVertexShader<VSOutput>::Output operator()(const Vertex& v) const
+		{
+			// calculate some triggy bois
+			const auto angle = wrap_angle(v.pos.x * freq + t * wavelength);
+			const auto cosx = std::cos(angle);
+			const auto sinx = std::sin(angle);
+			// sine wave amplitude from position w/ time variant phase animation
+			const auto dz = amplitude * cosx;
+			const auto pos = Vec4{ v.pos.x,v.pos.y,v.pos.z + dz,1.0f };
+			// normal derived base on cross product of partial dx x dy
+			auto n = Vec4{
+				-freq * amplitude * sinx,
+				0.0f,
+				-1.0f,
+				0.0f
+			};
+			n.Normalize();
+
+			return { pos * this->worldViewProj,n * this->worldView,pos * this->worldView,v.t };
+		}
+	private:
+		static constexpr float wavelength = PI;
+		static constexpr float freq = 45.0f;
+		static constexpr float amplitude = 0.02f;
+		float t = 0.0f;
 	};
 	// default gs passes vertices through and outputs triangle
 	typedef DefaultGeometryShader<typename VertexShader::Output> GeometryShader;
@@ -121,13 +153,25 @@ public:
 	class PixelShader : public BasePhongShader<Diffuse, Specular>
 	{
 	public:
-		template<class Input>	// VSOutput
+		template<class Input>
 		Color operator()(const Input& in) const
 		{
+			const auto material_color = Vec3(pTex->GetPixel(
+				static_cast<unsigned int>(in.t.x * tex_width + 0.5f) % tex_width,
+				static_cast<unsigned int>(in.t.y * tex_height + 0.5f) % tex_width
+			)) / 255.0f;
 			return this->Shade(in, material_color);
 		}
+		void BindTexture(const Surface& tex)
+		{
+			pTex = &tex;
+			tex_width = pTex->GetWidth();
+			tex_height = pTex->GetHeight();
+		}
 	private:
-		Vec3 material_color = { 0.8f,0.85f,1.0f };
+		const Surface* pTex = nullptr;
+		unsigned int tex_width;
+		unsigned int tex_height;
 	};
 public:
 	VertexShader vs;

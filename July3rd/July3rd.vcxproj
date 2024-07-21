@@ -142,29 +142,19 @@
     <ClCompile Include="tiny_obj_loader.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="BasePhongShader.h" />
+    <ClInclude Include="BaseVertexShader.h" />
     <ClInclude Include="ChiliException.h" />
     <ClInclude Include="ChiliMath.h" />
     <ClInclude Include="ChiliWin.h" />
     <ClInclude Include="Colors.h" />
     <ClInclude Include="Cube.h" />
-    <ClInclude Include="CubeFlatIndependentScene.h" />
-    <ClInclude Include="CubeSkinScene.h" />
-    <ClInclude Include="CubeSolidGeometryScene.h" />
-    <ClInclude Include="CubeSolidScene.h" />
-    <ClInclude Include="CubeVertexColorScene.h" />
-    <ClInclude Include="CubeVertexPositionColorScene.h" />
     <ClInclude Include="DefaultGeometryShader.h" />
     <ClInclude Include="DefaultVertexShader.h" />
     <ClInclude Include="DXErr.h" />
     <ClInclude Include="FrameTimer.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GDIPlusManager.h" />
-    <ClInclude Include="GeometryFlatEffect.h" />
-    <ClInclude Include="GeometryFlatScene.h" />
-    <ClInclude Include="GouraudEffect.h" />
-    <ClInclude Include="GouraudPointEffect.h" />
-    <ClInclude Include="GouraudPointScene.h" />
-    <ClInclude Include="GouraudScene.h" />
     <ClInclude Include="Graphics.h" />
     <ClInclude Include="IndexedTriangleList.h" />
     <ClInclude Include="Keyboard.h" />
@@ -173,12 +163,14 @@
     <ClInclude Include="Miniball.h" />
     <ClInclude Include="Mouse.h" />
     <ClInclude Include="MouseTracker.h" />
+    <ClInclude Include="NormiePipe.h" />
     <ClInclude Include="PhongPointEffect.h" />
     <ClInclude Include="PhongPointScene.h" />
     <ClInclude Include="Pipeline.h" />
     <ClInclude Include="Plane.h" />
     <ClInclude Include="Rect.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="RippleVertexSpecularPhongEffect.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="ScreenTransformer.h" />
     <ClInclude Include="SolidEffect.h" />
@@ -196,8 +188,8 @@
     <ClInclude Include="Vec4.h" />
     <ClInclude Include="VertexColorEffect.h" />
     <ClInclude Include="VertexFlatEffect.h" />
+    <ClInclude Include="VertexLightTexturedEffect.h" />
     <ClInclude Include="VertexPositionColorEffect.h" />
-    <ClInclude Include="VertexWaveScene.h" />
     <ClInclude Include="WaveVertexTextureEffect.h" />
     <ClInclude Include="ZBuffer.h" />
   </ItemGroup>
