@@ -11,8 +11,8 @@ public:
 	static IndexedTriangleList<V> GetPlain(float radius = 1.0f, int latDiv = 12, int longDiv = 24)
 	{
 		const Vec3 base = { 0.0f,0.0f,radius };
-		const float lattitudeAngle = PI / latDiv;
-		const float longitudeAngle = 2.0f * PI / longDiv;
+		const float lattitudeAngle = PI / latDiv;	// verical
+		const float longitudeAngle = 2.0f * PI / longDiv; // horizontal
 
 		std::vector<V> vertices;
 		for (int iLat = 1; iLat < latDiv; iLat++)

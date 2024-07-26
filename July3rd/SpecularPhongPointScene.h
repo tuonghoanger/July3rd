@@ -209,7 +209,7 @@ private:
 	WallPipeline wPipeline;
 	RipplePipeline rPipeline;
 	// fov
-	static constexpr float aspect_ratio = 16.0f / 9.0f;	// 16 / 9 1.33333f
+	static constexpr float aspect_ratio = static_cast<float>(Graphics::ScreenWidth)/ Graphics::ScreenHeight ;	// 16 / 9 1.33333f
 	static constexpr float hfov = 90.0f;
 	static constexpr float vfov = hfov / aspect_ratio;
 	// camera stuff

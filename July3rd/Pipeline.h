@@ -221,7 +221,7 @@ private:
 		const GSOut* pv1 = &triangle.v1;
 		const GSOut* pv2 = &triangle.v2;
 
-		// sorting vertices by y	v0 -> v1 -> v2
+		// sorting vertices by y  ( v0 top , v2 bottom )
 		if (pv1->pos.y < pv0->pos.y) std::swap(pv0, pv1);
 		if (pv2->pos.y < pv1->pos.y) std::swap(pv1, pv2);
 		if (pv1->pos.y < pv0->pos.y) std::swap(pv0, pv1);
@@ -299,7 +299,7 @@ private:
 		// create edge interpolant for left edge (always v0)
 		GSOut itEdge0 = it0;
 
-		// calculate start and end scanlines
+		// calculate start and end scanlines ( top left rule of directX )
 		const int yStart = std::max((int)ceil(it0.pos.y - 0.5f), 0);
 		const int yEnd = std::min((int)ceil(it2.pos.y - 0.5f), (int)Graphics::ScreenHeight - 1); // the scanline AFTER the last line drawn
 
@@ -318,7 +318,7 @@ private:
 
 			// calculate delta scanline interpolant / dx
 			const float dx = itEdge1.pos.x - itEdge0.pos.x;
-			const auto diLine = (itEdge1 - iLine) / dx;
+			const GSOut diLine = (itEdge1 - iLine) / dx;
 
 			// prestep scanline interpolant
 			iLine += diLine * (float(xStart) + 0.5f - itEdge0.pos.x);

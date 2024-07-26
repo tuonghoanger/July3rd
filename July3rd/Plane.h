@@ -15,7 +15,7 @@ public:
 		const int nVertices_x = divisions_x + 1;
 		const int nVertices_y = divisions_y + 1;
 		std::vector<V> vertices(nVertices_x * nVertices_y);
-		// give V a ctor for pos only %%%improvements
+		// give V vertex pos
 		{
 			const float side_x = width / 2.0f;
 			const float side_y = height / 2.0f;
@@ -84,6 +84,19 @@ public:
 	}
 
 	template<class V>
+	static IndexedTriangleList<V> GetSkinnedNormals(int divisions_x = 7, int divisions_y = 7, float width = 1.0f, float height = 1.0f, float tScale = 1.0f)
+	{
+		auto itlist = GetSkinned<V>(divisions_x, divisions_y, width, height, tScale);
+		for (auto& v : itlist.vertices)
+		{
+			v.n = { 0.0f,0.0f,-1.0f };
+		}
+
+		return itlist;
+	}
+
+	template<class V>
+
 	static IndexedTriangleList<V> GetNormals(int divisions_x = 7, int divisions_y = 7, float width = 1.0f, float height = 1.0f)
 	{
 		auto itlist = GetPlain<V>(divisions_x, divisions_y, width, height);
@@ -95,15 +108,4 @@ public:
 		return itlist;
 	}
 
-	template<class V>
-	static IndexedTriangleList<V> GetSkinnedNormals(int divisions_x = 7, int divisions_y = 7, float width = 1.0f, float height = 1.0f, float tScale = 1.0f)
-	{
-		auto itlist = GetSkinned<V>(divisions_x, divisions_y, width, height, tScale);
-		for (auto& v : itlist.vertices)
-		{
-			v.n = { 0.0f,0.0f,-1.0f };
-		}
-
-		return itlist;
-	}
 };
