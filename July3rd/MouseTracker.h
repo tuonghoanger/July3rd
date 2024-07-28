@@ -4,7 +4,7 @@
 class MouseTracker
 {
 public:
-	void Engage(const Vei2& pos)
+	void Engage(const Vei2& pos) // Vec2 with int params
 	{
 		base = pos;
 		engaged = true;

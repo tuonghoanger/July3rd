@@ -96,7 +96,6 @@ public:
 	}
 
 	template<class V>
-
 	static IndexedTriangleList<V> GetNormals(int divisions_x = 7, int divisions_y = 7, float width = 1.0f, float height = 1.0f)
 	{
 		auto itlist = GetPlain<V>(divisions_x, divisions_y, width, height);

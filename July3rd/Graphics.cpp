@@ -285,7 +285,7 @@ std::wstring Graphics::Exception::GetExceptionType() const
 	return L"Graphics Exception";
 }
 
-void Graphics::DrawLine(float x1, float y1, float x2, float y2, Color c) // bresenham's line
+void Graphics::DrawLine(float x1, float y1, float x2, float y2, Color c) 
 {
 	const float dx = x2 - x1;
 	const float dy = y2 - y1;

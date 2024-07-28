@@ -37,9 +37,9 @@ void Game::UpdateModel()
 	while (!wnd.kbd.KeyIsEmpty()) {
 		// update scene
 		const auto e = wnd.kbd.ReadKey();
-		if (e.GetCode() == VK_TAB && e.IsPress())
+		if (e.GetCode() == VK_ESCAPE && e.IsPress())
 		{
-			CycleScenes();
+			wnd.Kill();
 		}
 	}
 	(*curScene)->Update(wnd.kbd, wnd.mouse, dt);
