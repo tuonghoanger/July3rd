@@ -11,7 +11,7 @@ Game::Game(MainWindow& wnd)
 {
 	scenes.push_back(std::make_unique<SpecularPhongPointScene>(gfx));
 	curScene = scenes.begin();
-	OutputSceneName();
+	dt = ft.Mark();
 }
 
 void Game::Go()
@@ -21,18 +21,18 @@ void Game::Go()
 	ComposeFrame();
 	gfx.EndFrame();
 
-	//const int floatValue = 1.0f / ft.Mark();
-	//std::wostringstream woss;
-	//woss << L"Hoang DirectX Framework  " << floatValue;
-	//std::wstring title = woss.str();
+	dt = ft.Mark();
+	std::wostringstream woss;
+	int fps = static_cast<int>(1.0f / dt);
+	woss << L"Hoang DirectX Framework  FPS: " << fps;
+	std::wstring title = woss.str();
 
-	//// Set the window title
-	//SetWindowText(wnd.hWnd, title.c_str());
+	// Set the window title
+	SetWindowText(wnd.hWnd, title.c_str());
 }
 
 void Game::UpdateModel()
 {
-	const float dt = ft.Mark();
 	// cycle through scenes when tab is pressed
 	while (!wnd.kbd.KeyIsEmpty()) {
 		// update scene

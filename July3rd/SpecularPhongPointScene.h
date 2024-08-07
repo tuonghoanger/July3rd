@@ -101,11 +101,11 @@ public:
 		{
 			cam_pos += Vec4{ 1.0f,0.0f,0.0f,0.0f } *!cam_rot_inv * cam_speed * dt;
 		}
-		if (kbd.KeyIsPressed('Q'))
+		if (kbd.KeyIsPressed('E'))
 		{
 			cam_pos += Vec4{ 0.0f,1.0f,0.0f,0.0f } *!cam_rot_inv * cam_speed * dt;
 		}
-		if (kbd.KeyIsPressed('E'))
+		if (kbd.KeyIsPressed('Q'))
 		{
 			cam_pos += Vec4{ 0.0f,-1.0f,0.0f,0.0f } *!cam_rot_inv * cam_speed * dt;
 		}
@@ -189,13 +189,13 @@ public:
 		}
 
 		// draw ripple plane
-		//rPipeline.effect.ps.BindTexture(tSauron);
-		//rPipeline.effect.ps.SetLightPosition(l_pos * view);
-		//rPipeline.effect.vs.BindWorldView(sauronWorld * view);
-		//rPipeline.effect.vs.BindProjection(proj);
-		//rPipeline.effect.ps.SetAmbientLight(l_ambient);
-		//rPipeline.effect.ps.SetDiffuseLight(l);
-		//rPipeline.Draw(sauron);
+		rPipeline.effect.ps.BindTexture(tSauron);
+		rPipeline.effect.ps.SetLightPosition(l_pos * view);
+		rPipeline.effect.vs.BindWorldView(rippleWorld * view);
+		rPipeline.effect.vs.BindProjection(proj);
+		rPipeline.effect.ps.SetAmbientLight(l_ambient);
+		rPipeline.effect.ps.SetDiffuseLight(l);
+		rPipeline.Draw(sauron);
 	}
 private:
 	float t = 0.0f;
@@ -245,7 +245,7 @@ private:
 	std::vector<Wall> walls;
 	// ripple stuff
 	static constexpr float sauronSize = 0.6f;
-	Mat4 sauronWorld = Mat4::RotationX(PI / 2.0f) * Mat4::Translation(0.3f, -0.8, 0.0f);
+	Mat4 rippleWorld = Mat4::RotationX(PI / 2.0f) * Mat4::Translation(0.0f, -0.8, 0.0f);
 	Surface tSauron = Surface::FromFile(L"Images\\sauron-bhole-100x100.png");
 	IndexedTriangleList<RippleVertexSpecularPhongEffect::Vertex> sauron = Plane::GetSkinned<RippleVertexSpecularPhongEffect::Vertex>(50, 10, sauronSize, sauronSize, 0.6f);
 };

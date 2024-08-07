@@ -31,6 +31,7 @@ private:
 	/********************************/
 	/*  User Variables              */
 	FrameTimer ft;
+	float dt;
 	std::vector<std::unique_ptr<Scene>> scenes;
 	std::vector<std::unique_ptr<Scene>>::iterator curScene;
 	/********************************/
