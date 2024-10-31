@@ -218,7 +218,7 @@ private:
 	static constexpr float vtrack = to_rad(vfov) / (float)Graphics::ScreenHeight;
 	static constexpr float cam_speed = 1.0f;
 	static constexpr float cam_roll_speed = PI;
-	Vec3 cam_pos = { 0.0f,0.0f,0.0f };
+	Vec3 cam_pos = { 0.0f,0.0f,-1.2f };
 	Mat4 cam_rot_inv = Mat4::Identity();
 	// suzanne model stuff
 	IndexedTriangleList<Vertex> itlist = IndexedTriangleList<SpecularPhongPointScene::Vertex>::LoadNormals("models\\suzanne.obj");
