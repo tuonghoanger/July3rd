@@ -143,8 +143,8 @@ public:
 		}
 
 		theta_y = wrap_angle(t * rotspeed);
-		l_pos.y = l_height_amplitude * sin(wrap_angle((PI / (2.0f * l_height_amplitude)) * t));
-		
+		l_pos = zero * Mat4::Translation(light_mod_pos) * Mat4::RotationY(theta_y);
+
 		rPipeline.effect.vs.SetTime(t);
 	}
 	virtual void Draw() override
@@ -156,11 +156,11 @@ public:
 
 		// render suzanne
 		pipeline.effect.vs.BindWorldView(
-			Mat4::RotationX(theta_x) *
-			Mat4::RotationY(theta_y) *
-			Mat4::RotationZ(theta_z) *
+			//Mat4::RotationX(theta_x) *
+			Mat4::RotationY(suzz_y) *
+			//Mat4::RotationZ(theta_z) *
 			Mat4::Scaling(scale) *
-			Mat4::Translation(mod_pos) *
+			//Mat4::Translation(mod_pos) *
 			view
 		);
 		pipeline.effect.vs.BindProjection(proj);
@@ -172,7 +172,11 @@ public:
 		// draw light indicator with different pipeline
 		// don't call beginframe on this pipeline b/c wanna keep zbuffer contents
 		// (don't like this assymetry but we'll live with it for now)
-		liPipeline.effect.vs.BindWorldView(Mat4::Translation(l_pos) * view);
+		liPipeline.effect.vs.BindWorldView(
+			Mat4::Translation(light_mod_pos) *
+			Mat4::RotationY(theta_y) *
+			view
+		);
 		liPipeline.effect.vs.BindProjection(proj);
 		liPipeline.Draw(lightIndicator);
 
@@ -198,6 +202,9 @@ public:
 		rPipeline.Draw(sauron);
 	}
 private:
+	Vec4 zero = { 0.0f,0.0f,0.0f,1.0f };
+	Vec3 light_mod_pos = { 0.0f,0.0f,0.7f };
+	float suzz_y = 3.14;
 	float t = 0.0f;
 	// scene params
 	static constexpr float width = 4.0f;
@@ -218,7 +225,7 @@ private:
 	static constexpr float vtrack = to_rad(vfov) / (float)Graphics::ScreenHeight;
 	static constexpr float cam_speed = 1.0f;
 	static constexpr float cam_roll_speed = PI;
-	Vec3 cam_pos = { 0.0f,0.0f,-1.2f };
+	Vec3 cam_pos = { 0.0f,0.0f,-1.5f };
 	Mat4 cam_rot_inv = Mat4::Identity();
 	// suzanne model stuff
 	IndexedTriangleList<Vertex> itlist = IndexedTriangleList<SpecularPhongPointScene::Vertex>::LoadNormals("models\\suzanne.obj");
@@ -226,13 +233,13 @@ private:
 	float theta_x = 0.0f;
 	float theta_y = 0.0f;
 	float theta_z = 0.0f;
-	float rotspeed = PI / 4.0f;
-	float scale = 0.4;
+	float rotspeed = PI / 2.0f;
+	float scale = 0.3;
 	// light stuff
 	IndexedTriangleList<SolidEffect::Vertex> lightIndicator = Sphere::GetPlain<SolidEffect::Vertex>(0.05f);
-	static constexpr float l_height_amplitude = 0.7f;
+	static constexpr float l_height_amplitude = 1.0f;
 	static constexpr float l_height_period = 3.713f;
-	Vec4 l_pos = { 0.0f,0.0f,0.5f,1.0f };
+	Vec4 l_pos = { 0.0f,0.0f,0.0f,1.0f };
 	Vec3 l = { 1.0f,1.0f,1.0f };
 	Vec3 l_ambient = { 0.35f,0.35f,0.35f };
 	// wall stuff
